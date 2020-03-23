@@ -1,0 +1,20 @@
+{
+  "name": "Social-Networking-App",
+  "version": "1.0.0",
+  "description": "Project by Deepak and Kunal",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/attainu/Social-Networking-App.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/attainu/Social-Networking-App/issues"
+  },
+  "homepage": "https://github.com/attainu/Social-Networking-App#readme"
+}
