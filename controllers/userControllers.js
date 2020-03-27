@@ -15,7 +15,7 @@ module.exports = {
             currentUser.confirmToken = confirmEmailToken
             currentUser.token = token
             await currentUser.save();
-            await sendMail(currentUser.email, confirmEmailToken,"email")
+            await sendMail(currentUser.email, confirmEmailToken, "email")
             return res.json("Confirm your email");
         }
         catch (error) {
@@ -77,12 +77,12 @@ module.exports = {
     sendForgotPasswordMail: async (req, res) => {
         try {
             let email = req.body.email
-            let user = await User.findOne({email})
-            if(user){
+            let user = await User.findOne({ email })
+            if (user) {
                 let token = sign({ payload: user._id }, process.env.PRIVATE_KEY);
                 user.confirmToken = token
                 await user.save()
-                await sendMail(email,token)
+                await sendMail(email, token)
                 res.send("Check Your Email to reset password")
             }
         }
@@ -90,12 +90,12 @@ module.exports = {
             res.send(error.message)
         }
     },
-    resetPassword:async (req,res) => {
+    resetPassword: async (req, res) => {
         try {
             let password = req.body.password;
             let token = req.params.confirmToken;
-            let user = await User.findOne({confirmToken:token})
-            if(user){
+            let user = await User.findOne({ confirmToken: token })
+            if (user) {
                 let hashedPassword = await hash(password, 10);
                 user.password = hashedPassword;
                 await user.save()
