@@ -15,24 +15,21 @@ var postSchema = new Schema (
             type:String,
             required:true
         },
-        like:[
+        likes:[
             {
                 type:Schema.Types.ObjectId,
-                ref:"user",
-                default:null
             }
         ],
-        comment:[
+        comments:[
             {
                 type:Schema.Types.ObjectId,
-                ref:"user",
-                default:null
+                ref:"comment",
+                
             }
         ],
         user:{
                 type:Schema.Types.ObjectId,
                 ref:"user",
-                default:null
             }
         
     },

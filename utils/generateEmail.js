@@ -21,9 +21,7 @@ const sendMailToUser = async (email, token, mode) => {
     </p> 
   ` : `
   <h1>Rest Password</h1>
-  <p>Thanks for creating an account. Click 
-    <a href=http://localhost:8089/resetPassword/${token}>here</a> to reset password. Or copy paste http://localhost:8089/resetPassword/${token} to your browser.
-  </p>
+  <p>Thanks for creating an account. Here is your otp to change the password ${token} </p>
 `
     await transport.sendMail({
       from: GMAIL_ID,
