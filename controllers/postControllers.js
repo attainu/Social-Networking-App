@@ -5,7 +5,7 @@ let Post = require("../models/Post");
 
 module.exports = {
     getPost:async (req,res) => {
-        let posts = await Post.find({})
+        let posts = await Post.find({}).populate("user",["name"]).populate("comments",["status"])
         res.send(posts);
     },
     createPost: async (req, res) => {
@@ -35,29 +35,28 @@ module.exports = {
             return res.status(500).send(error.message)
         }
     },
-    likePost:async (req,res) =>{
+    likeUnlikePost:async (req,res) =>{
         try {
             let userId = req.user._id;
-            let postId = req.params.postId
+            let postId = req.params.postId;
             let post = await Post.findOne({_id:postId});
-            post.likes.push(userId)
+            let likeIndex = post.likes.indexOf(userId )
+            if(likeIndex === -1){
+                post.likes.push(userId)
+                await post.save()
+            }
+            else{
+                post.likes.splice(likeIndex,1)
+            }
             await post.save()
             res.send("done")
         } catch (error) {
             return res.send(500).send(error.message)
         }
     },
-    unlikePost:async (req,res) =>{
-        try {
-            let userId = req.user._id;
-            let postId = req.params.postId;
-        } catch (error) {
-            return res.send(500).send(error.message)
-        }
-    },
     updatePost: async (req, res) => {
         try {
-            let postId = req.params.postId
+            let postId = req.params.postId;
             let userPostStatus = req.body.status;
             await Post.updateOne({ _id: postId }, { status: userPostStatus })
             return res.send("done")

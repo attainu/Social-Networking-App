@@ -27,14 +27,16 @@ module.exports = {
     updateComment: async (req, res) => {
         try {
             let userId = req.user._id;
-            let newComment = req.body.comment
+            let newComment = req.body.comment;
             let commentId = req.params.commentId;
             let comment = await Comment.findOne({_id:commentId});
             if(comment.user === userId){
                 comment.comment = newComment;
                 await comment.save()
+                res.send("done") 
+            }else{
+                throw new Error("You can delete your comment only")
             }
-            res.send("done") 
         }
         catch(error){
             return res.status(500).send(error.message)

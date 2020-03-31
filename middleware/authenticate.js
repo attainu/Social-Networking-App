@@ -3,7 +3,6 @@ let { verify } = require("jsonwebtoken");
 
 module.exports = async (req, res, next) => {
     try {
-        console.log(req.body)
         let authHeader = req.header("Authorization");
         if (!authHeader) {
             throw new Error("NO ACCESS TOKEN")
