@@ -40,6 +40,7 @@ module.exports = {
             let userId = req.user._id;
             let postId = req.params.postId;
             let post = await Post.findOne({_id:postId});
+            console.log(post)
             let likeIndex = post.likes.indexOf(userId )
             if(likeIndex === -1){
                 post.likes.push(userId)
@@ -51,7 +52,7 @@ module.exports = {
             await post.save()
             res.send("done")
         } catch (error) {
-            return res.send(500).send(error.message)
+            return res.status(500).send(error.message)
         }
     },
     updatePost: async (req, res) => {
