@@ -5,7 +5,8 @@ let Post = require("../models/Post");
 
 module.exports = {
     getPost:async (req,res) => {
-        let posts = await Post.find({}).populate("user",["name"]).populate("comments",["status"])
+        let posts = await Post.find({}).populate("user",["name"]).populate({path:"comments",populate:{path:"user"}})
+        //let posts = await Post.find({}).populate("user",["name"]).populate("comments",["comment"])
         res.send(posts);
     },
     createPost: async (req, res) => {
@@ -28,7 +29,7 @@ module.exports = {
             let post = new Post({ ...finalPost });
             await post.save()
             user.posts.push(post._id);
-            await user.save()
+            await user.save();
             return res.json(finalPost)
         }
         catch(error){
@@ -40,7 +41,6 @@ module.exports = {
             let userId = req.user._id;
             let postId = req.params.postId;
             let post = await Post.findOne({_id:postId});
-            console.log(post)
             let likeIndex = post.likes.indexOf(userId )
             if(likeIndex === -1){
                 post.likes.push(userId)
@@ -50,7 +50,7 @@ module.exports = {
                 post.likes.splice(likeIndex,1)
             }
             await post.save()
-            res.send("done")
+            return res.json({likeLength:post.likes.length})
         } catch (error) {
             return res.status(500).send(error.message)
         }

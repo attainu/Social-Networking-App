@@ -5,7 +5,7 @@ let Post = require("../models/Post")
 module.exports = {
     createComment: async (req, res) => {
         try {
-            let userId = req.user._id
+            let userId = req.user
             let postId = req.params.postId
             let userComment = req.body.comment;
             let finalComment = {
@@ -18,7 +18,7 @@ module.exports = {
             let post = await Post.findOne({_id:postId})
             post.comments.push(comment._id);
             await post.save()
-            return res.json(comment)
+            return res.json({name:req.user.name ,comment:userComment})
         }
         catch(error){
             return res.status(500).send(error.message)
@@ -30,7 +30,8 @@ module.exports = {
             let newComment = req.body.comment;
             let commentId = req.params.commentId;
             let comment = await Comment.findOne({_id:commentId});
-            if(comment.user === userId){
+            
+            if(comment.user.toString() === userId.toString()){
                 comment.comment = newComment;
                 await comment.save()
                 res.send("done") 

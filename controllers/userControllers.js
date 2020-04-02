@@ -5,7 +5,6 @@ let User = require("../models/User");
 
 module.exports = {
     register: async (req, res) => {
-        console.log(req.body.formData)
         try {
             let user = req.body
             let currentUser = new User({ ...user });
@@ -17,7 +16,7 @@ module.exports = {
             // currentUser.token = token
             await currentUser.save();
             await sendMail(currentUser.email, confirmEmailToken, "email")
-            return res.json(currentUser);
+            return res.json("done");
         }
         catch (error) {
             return res.status(500).send(error.message)
@@ -58,34 +57,34 @@ module.exports = {
 
         }
         catch (error) {
-            return res.status(500).send(error.message)
+            return res.status(500).send(error.message);
         }
     },
     logout: async (req, res) => {
         try {
             let userToken = req.header("Authorization");
             let currentUser = await User.findOne({ token: userToken });
-            if (currentUser === undefined) throw new Error("Invalid Access Token")
+            if (currentUser === undefined) throw new Error("Invalid Access Token");
             else {
                 currentUser.token = null;
                 currentUser.save()
             }
-            res.status(200).json("Done")
+            res.status(200).json("Done");
         }
         catch (error) {
-            return res.send(error.message)
+            return res.send(error.message);
         }
     },
     sendForgotPasswordMail: async (req, res) => {
         try {
-            let email = req.body.email
-            let user = await User.findOne({ email })
+            let email = req.body.email;
+            let user = await User.findOne({ email });
             if (user) {
                 let token = Math.floor(1000 + Math.random() * 9000);
-                user.confirmToken = token
-                await user.save()
-                await sendMail(email, token)
-                res.send("Check Your Email to reset password")
+                user.confirmToken = token;
+                await user.save();
+                await sendMail(email, token);
+                res.send("Check Your Email to reset password");
             }
         }
         catch (error) {
@@ -100,12 +99,48 @@ module.exports = {
             if (user) {
                 let hashedPassword = await hash(newPassword, 10);
                 user.password = hashedPassword;
-                user.confirmToken = null
-                await user.save()
-                res.send("Password Updated")
+                user.confirmToken = null;
+                await user.save();
+                res.send("Password Updated");
             }
         } catch (error) {
             res.send(error.message)
+        }
+    },
+    sendRequest: async (req,res) => {
+        try {
+            let userId = req.user._id;
+            let requestUserId = req.params.requestUserId;
+            let user = await User.findOne({_id:userId})
+            let requestUser = await User.findOne({_id:requestUserId});
+            
+            requestUser.receivedRequests.push(userId);
+            user.sentRequests.push(requestUserId);
+            await requestUser.save();
+            await user.save()
+            res.send("done");
+        } catch (error) {
+            return res.send(error.message)
+        }
+    },
+    acceptRequest:async (req,res) => {
+        try {
+            let userId = req.user._id;
+            let acceptUserId = req.params.acceptUserId;
+            let user =await User.findOne({_id:userId});
+            let acceptUser = await User.findOne({_id:acceptUserId});
+            // let acceptRequest = user.receivedRequests.find((u) =>{ u._id == acceptUserId; return u})
+            // acceptRequest.isAccepted = true;
+            let sentRequest = acceptUser.sentRequests.find((u) =>{ u._id == userId; return u})
+            sentRequest.isAccepted = true;
+            user.friends.push(acceptUserId);
+            acceptUser.friends.push(userId);
+            await user.save();
+            await acceptUser.save();
+            return res.send("done")
+
+        } catch (error) {
+            return res.send(error.message)
         }
     }
 }
