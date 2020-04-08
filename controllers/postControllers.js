@@ -1,13 +1,18 @@
 let bufferConversion = require("../utils/bufferConversion");
 let cloudinary = require("../utils/cloudinary");
 let Post = require("../models/Post");
+let Comment = require("../models/Comment");
+
 
 
 module.exports = {
-    getPost:async (req,res) => {
-        let posts = await Post.find({}).populate("user",["name"]).populate({path:"comments",populate:{path:"user"}})
-        //let posts = await Post.find({}).populate("user",["name"]).populate("comments",["comment"])
-        res.send(posts);
+    getAllPosts:async (req,res) => {
+        try {
+            let posts = await Post.find({}).populate("user",["name"]).populate({path:"comments",populate:{path:"user"}});
+            return res.status(200).json(posts); 
+        } catch (error) {
+            return res.status(200).json({Error:error.message})
+        }
     },
     createPost: async (req, res) => {
         try {
@@ -16,10 +21,8 @@ module.exports = {
                 req.file.originalname,
                 req.file.buffer
             );
-            console.log(req.body)
-
             let userPostStatus = req.body.status;
-            let imgResponse = await cloudinary.uploader.upload(userPostImg)
+            let imgResponse = await cloudinary.uploader.upload(userPostImg);
             let finalPost = {
                 status: userPostStatus,
                 imgPath: imgResponse.secure_url,
@@ -27,13 +30,13 @@ module.exports = {
                 user: user._id
             }
             let post = new Post({ ...finalPost });
-            await post.save()
+            await post.save();
             user.posts.push(post._id);
             await user.save();
-            return res.json(finalPost)
+            return res.status(201).json(finalPost);
         }
         catch(error){
-            return res.status(500).send(error.message)
+            return res.status(500).json(error.message)
         }
     },
     likeUnlikePost:async (req,res) =>{
@@ -50,17 +53,17 @@ module.exports = {
                 post.likes.splice(likeIndex,1)
             }
             await post.save()
-            return res.json({likeLength:post.likes.length})
+            return res.status(200).json({likeLength:post.likes.length});
         } catch (error) {
-            return res.status(500).send(error.message)
+            return res.status(500).json(error.message);
         }
     },
     updatePost: async (req, res) => {
         try {
-            let postId = req.params.postId;
-            let userPostStatus = req.body.status;
-            await Post.updateOne({ _id: postId }, { status: userPostStatus })
-            return res.send("done")
+            let post = req.post;
+            let newPostStatus = req.body.status;
+            await Post.updateOne({ _id: post._id }, { status: newPostStatus });
+            return res.send("SUCCESS")
         }
         catch(error){
             return res.status(500).send(error.message)
@@ -68,16 +71,15 @@ module.exports = {
     },
     deletePost: async (req, res) => {
         try{
-            let postId = req.params.postId;
-            let currentPost = await Post.findOne({ _id: postId });
-            await cloudinary.uploader.destroy(currentPost.imgId)
-            await Post.deleteOne({ _id: postId });
+            let post = req.post;
+            await cloudinary.uploader.destroy(post.imgId);
+            await Post.deleteOne({ _id: post._id });
+            await Comment.deleteMany({post:post._id})
             res.send("done")
         }
         catch(error){
             return res.status(500).send(error.message)
         }
     }
-    
 }
 

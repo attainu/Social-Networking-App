@@ -21,40 +21,28 @@ module.exports = {
             return res.json({name:req.user.name ,comment:userComment})
         }
         catch(error){
-            return res.status(500).send(error.message)
+            return res.status(500).json(error.message)
         }
     },
     updateComment: async (req, res) => {
         try {
-            let userId = req.user._id;
+            let comment = req.comment;
             let newComment = req.body.comment;
-            let commentId = req.params.commentId;
-            let comment = await Comment.findOne({_id:commentId});
-            
-            if(comment.user.toString() === userId.toString()){
-                comment.comment = newComment;
-                await comment.save()
-                res.send("done") 
-            }else{
-                throw new Error("You can delete your comment only")
-            }
+            comment.comment = newComment;
+            await comment.save();
+            return res.status(200).json("UPDATED SUCCESSFULLY")
         }
         catch(error){
-            return res.status(500).send(error.message)
+            return res.status(500).json(error.message)
         }
     },
     deleteComment: async (req, res) => {
         try {
-            let userId = req.user._id;
-            let commentId = req.params.commentId;
-            let comment = await Comment.findOne({_id:commentId});
-            if(comment.user === userId){
-                await Comment.deleteOne({_id:commentId})
-            }
-            res.send("done") 
+            let comment = req.comment;
+            await Comment.deleteOne({_id:comment._id})
         }
         catch(error){
-            return res.status(500).send(error.message)
+            return res.status(500).json(error.message)
         }
     }
 }

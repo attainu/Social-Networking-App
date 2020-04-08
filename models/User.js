@@ -1,7 +1,7 @@
 let mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 
-var userSchema = new Schema(
+let userSchema = new Schema(
     {
         name: {
             type: String,
@@ -11,7 +11,8 @@ var userSchema = new Schema(
         email: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            unique:true,
         },
         password: {
             type: String,
@@ -26,6 +27,10 @@ var userSchema = new Schema(
         dob: {
             type: String,
             required: true
+        },
+        profilePicture:{
+            type:String,
+            default:null
         },
         isConfirm: {
             type: Boolean,
@@ -50,7 +55,9 @@ var userSchema = new Schema(
             {
                 user: {
                     type: Schema.Types.ObjectId,
-                    ref: "user"
+                    ref: "user",
+                    unique:true
+
                 },
                 isAccepted: {
                     type: Boolean,
@@ -63,7 +70,8 @@ var userSchema = new Schema(
             {
                 user: {
                     type: Schema.Types.ObjectId,
-                    ref: "user"
+                    ref: "user",
+                    unique:true
                 },
                 isAccepted: {
                     type: Boolean,
@@ -74,7 +82,8 @@ var userSchema = new Schema(
         friends: [
             {
                 type: Schema.Types.ObjectId,
-                ref: "user"
+                ref: "user",
+                unique:true
             }
         ]
     },

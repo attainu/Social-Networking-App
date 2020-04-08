@@ -4,13 +4,9 @@ let { verify } = require("jsonwebtoken");
 module.exports = async (req, res, next) => {
     try {
         let authHeader = req.header("Authorization");
-        if (!authHeader) {
-            throw new Error("NO ACCESS TOKEN")
-        }
+        if (!authHeader) throw new Error("NO ACCESS TOKEN")
         let currentUser = await User.findOne({ token: authHeader });
-        if (currentUser === undefined) {
-            throw new Error("INVALID ACCESS TOKEN")
-        }
+        if (!currentUser ) throw new Error("INVALID ACCESS TOKEN")
         if(currentUser.isConfirm){
             verify(authHeader, process.env.PRIVATE_KEY, (err) => {
                 if (err) {

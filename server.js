@@ -4,7 +4,8 @@ dotenv.config()
 let express = require("express");
 let userRoutes = require("./routes/userRoutes");
 let postRoutes = require("./routes/postRoutes");
-let commentRoutes = require("./routes/commentRoutes")
+let commentRoutes = require("./routes/commentRoutes");
+let inboxRoutes = require("./routes/inboxRoutes");
 let app = express();
 require("./db");
 
@@ -25,6 +26,7 @@ app.use(express.json())
 app.use(userRoutes);
 app.use(postRoutes);
 app.use(commentRoutes);
+app.use(inboxRoutes);
 
 //Listing to the server
 app.listen(8089, () => console.log("Server connected"));
