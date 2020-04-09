@@ -45,14 +45,14 @@ module.exports = {
     },
     login: async (req, res) => {
         try {
-            let currentUser = await User.findOne({ email: req.body.email });
-            if (!currentUser) throw new Error("USER NOT FOUND")
+            let currentUser = await User.findOne({ email: req.body.email }).populate("friends",["name","profilePicture","city"]);
+            if (!currentUser) throw new Error("USER NOT FOUND");
             let checkpassword = await compare(req.body.password, currentUser.password);
             if (checkpassword) {
                 let token = sign({ payload: currentUser._id }, process.env.PRIVATE_KEY);
                 currentUser.token = token
                 await currentUser.save()
-                return res.status(202).json("SUCCESS");
+                return res.status(202).json(currentUser.toJSON());
             }
             else throw new Error("INCORRECT PASSWORD")
 
@@ -178,6 +178,14 @@ module.exports = {
             return res.status(200).json("SUCCESS");
         } catch (error) {
             return res.status(500).json(error.message);
+        }
+    },
+    getAllUsers: async (req,res) => {
+        try {
+            let users = await User.find({})
+            return res.status(200).json(users)
+        } catch (error) {
+            return res.status(500).json(error.message)
         }
     }
 }

@@ -5,21 +5,20 @@ let Schema = mongoose.Schema;
 
 var inboxSchema = new Schema(
     {
-        user01: {
+        user: {
             type: Schema.Types.ObjectId,
             ref: "user",
             required: true
         },
-        user02: {
+        friend: {
             type: Schema.Types.ObjectId,
             ref: "user",
             required: true
         },
         conversation: [
             {
-                user: {
-                    type: Schema.Types.ObjectId,
-                    ref: "user"
+                name: {
+                    type: String,
                 },
                 message: {
                     type: String,

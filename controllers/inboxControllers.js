@@ -7,22 +7,33 @@ module.exports = {
             let currentUser = req.user;
             let friendId = req.params.sendTo;
             let message = req.body.message;
-            let formatedMessage = formatMessage(currentUser._id,message)
-            let conversation = await Inbox.findOne( { $or: [ { user01:currentUser._id }, { user02: currentUser._id } ] } );
-            if(!conversation){
-                let messageInfo = {
-                    user01:currentUser._id,
-                    user02:friendId,
+            let formatedMessage = formatMessage(currentUser._id,message,currentUser.name);
+            let userConversation = await Inbox.findOne( { $and : [ { user: currentUser._id}, { friend: friendId } ] } ).populate({path:"conversation",populate:{path:"user"}});
+            let friendConversation = await Inbox.findOne( { $and : [ { user: friendId }, { friend: currentUser._id } ] } );
+            if(!userConversation){
+                let messageInfoUser = {
+                    user:currentUser._id,
+                    friend:friendId,
                 }
-                let inbox = new Inbox({...messageInfo});
-                inbox.conversation.push(formatedMessage);
-                await inbox.save();
-                return res.json(inbox);
+                let userInbox = new Inbox({...messageInfoUser});
+                userInbox.conversation.push(formatedMessage);
+                await userInbox.save();
+
+                let messageInfoFriend = {
+                    user:friendId,
+                    friend:currentUser._id,
+                }
+                let friendInbox = new Inbox({...messageInfoFriend});
+                friendInbox.conversation.push(formatedMessage);
+                await friendInbox.save();
+                return res.json(userConversation);
             }
             else {
-                conversation.conversation.push(formatedMessage);
-                await conversation.save()
-                return res.json(conversation)
+                userConversation.conversation.push(formatedMessage);
+                friendConversation.conversation.push(formatedMessage);
+                await friendConversation.save()
+                await userConversation.save()
+                return res.json(userConversation)
             }
         } 
         catch (error) {
@@ -33,8 +44,9 @@ module.exports = {
     getInbox: async (req,res) => {
         try {
             let currentUser = req.user;
-            let inbox = await Inbox.find( { $or: [ { user01:currentUser._id }, { user02: currentUser._id } ] } )
-            return res.json(inbox)
+            console.log(currentUser._id)
+            let convo = await Inbox.find({user:currentUser._id}).populate("friend",["name","profilePicture"])
+            return res.json(convo)
         } catch (error) {
             return res.json(error.message)
         }

@@ -12,7 +12,7 @@ let userSchema = new Schema(
             type: String,
             required: true,
             trim: true,
-            unique:true,
+            unique: true,
         },
         password: {
             type: String,
@@ -28,9 +28,9 @@ let userSchema = new Schema(
             type: String,
             required: true
         },
-        profilePicture:{
-            type:String,
-            default:null
+        profilePicture: {
+            type: String,
+            default: null
         },
         isConfirm: {
             type: Boolean,
@@ -56,7 +56,7 @@ let userSchema = new Schema(
                 user: {
                     type: Schema.Types.ObjectId,
                     ref: "user",
-                    unique:true
+                    unique: true
 
                 },
                 isAccepted: {
@@ -71,7 +71,7 @@ let userSchema = new Schema(
                 user: {
                     type: Schema.Types.ObjectId,
                     ref: "user",
-                    unique:true
+                    unique: true
                 },
                 isAccepted: {
                     type: Boolean,
@@ -83,12 +83,20 @@ let userSchema = new Schema(
             {
                 type: Schema.Types.ObjectId,
                 ref: "user",
-                unique:true
+                unique: true
             }
         ]
     },
     { timestamps: true }
 );
+
+userSchema.methods.toJSON = function () {
+    const user = this.toObject();
+    delete user.password;
+    delete user.confirmToken;
+    delete user.__v;
+    return user;
+};
 
 let User = mongoose.model("user", userSchema);
 

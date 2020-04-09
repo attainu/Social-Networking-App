@@ -20,7 +20,7 @@ app.use(function(req, res, next) {
 
 //Body Parser
 app.use(express.json())
-//app.use(express.urlencoded({extended:false}))
+app.use(express.urlencoded({extended:false}))
 
 //Routes
 app.use(userRoutes);
