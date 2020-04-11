@@ -10,6 +10,9 @@ module.exports = {
     register: async (req, res) => {
         try {
             let user = req.body;
+            const userCheck = await User.findOne({ email: user.email })
+            if (userCheck)
+                return res.status(403).json({ message: "This email already exist" })
             let currentUser = new User({ ...user });
             let hashedPassword = await hash(currentUser.password, 10);
             currentUser.password = hashedPassword;
@@ -27,9 +30,9 @@ module.exports = {
     confirmEmail: async (req, res) => {
         try {
             let header = req.params.confirmToken;
-            if (!header) throw new Error("NO ACCESS TOKEN")
+            if (!header) return res.status(401).json({ message: "NO ACCESS TOKEN , UNAUTHORIZED" })
             let currentUser = await User.findOne({ confirmToken: header });
-            if (!currentUser) throw new Error("INVALID ACCESS TOKEN")
+            if (!currentUser) res.status(404).json({ message: "INVALD ACCESS TOKEN" })
             let payload = verify(header, process.env.CONFIRM_EMAIL_KEY);
             if (payload) {
                 currentUser.isConfirm = true;
@@ -37,7 +40,7 @@ module.exports = {
                 currentUser = await currentUser.save();
                 return res.status(202).send("<h1>Congratulations !!! Your Email has been confirmed</h1>")
             }
-            else throw new Error("TOKEN HAS BEEN EXPIRED")
+            return res.status(401).json({ message: "TOKEN HAS BEEN EXPIRED" })
         }
         catch (error) {
             return res.status(500).json({ Error: error.message })
@@ -45,8 +48,8 @@ module.exports = {
     },
     login: async (req, res) => {
         try {
-            let currentUser = await User.findOne({ email: req.body.email }).populate("friends",["name","profilePicture","city"]);
-            if (!currentUser) throw new Error("USER NOT FOUND");
+            let currentUser = await User.findOne({ email: req.body.email }).populate("friends", ["name", "profilePicture", "city"]);
+            if (!currentUser) return res.status(404).json({ message: "Invalid Credentials" })
             let checkpassword = await compare(req.body.password, currentUser.password);
             if (checkpassword) {
                 let token = sign({ payload: currentUser._id }, process.env.PRIVATE_KEY);
@@ -54,14 +57,14 @@ module.exports = {
                 await currentUser.save()
                 return res.status(202).json(currentUser.toJSON());
             }
-            else throw new Error("INCORRECT PASSWORD")
+            return res.status(401).json({ message: "Invalid Credentials" })
 
         }
         catch (error) {
             return res.status(500).json(error.message);
         }
     },
-    uploadProfilePicture:async (req,res) => {
+    uploadProfilePicture: async (req, res) => {
         try {
             let currentUser = req.user;
             let userProPic = bufferConversion(
@@ -98,7 +101,7 @@ module.exports = {
                 await sendMail(email, token);
                 return res.status(200).json("OTP HAS BEEN SENT TO YOUR EMAIL");
             }
-            else throw new Error("USER NOT FOUND")
+            return res.status(404).json({ message: "USER NOT FOUND" })
         }
         catch (error) {
             return res.status(500).json(error.message)
@@ -108,7 +111,7 @@ module.exports = {
         try {
             let { otp, email, password } = req.body;
             let user = await User.findOne({ email: email });
-            if (!user) throw new Error("USER NOT FOUND");
+            if (!user) return res.status(404).json({ message: "USER NOT FOUND" })
             else if (user.confirmToken === otp) {
                 let hashedPassword = await hash(password, 10);
                 user.password = hashedPassword;
@@ -116,7 +119,7 @@ module.exports = {
                 await user.save();
                 return res.status(200).json("SUCCESS");
             }
-            else throw new Error("INCORRECT OTP")
+            else return res.status(401).json({ message: "INVALID OTP" })
         } catch (error) {
             return res.status(500).json(error.message)
         }
@@ -127,8 +130,8 @@ module.exports = {
             let requestUserId = req.params.requestUserId;
             let requestUser = await User.findOne({ _id: requestUserId });
             let sentRequest = currentUser.sentRequests.find((u) => { u._id == requestUserId._id; return u });
-            if (!requestUser) throw new Error("REQUESTED USER NOT FOUND");
-            else if(!sentRequest){
+            if (!requestUser) res.status(404).json({ message: "USER NOT FOUND" })
+            else if (!sentRequest) {
                 requestUser.receivedRequests.push(currentUser);
                 currentUser.sentRequests.push(requestUserId);
                 await requestUser.save();
@@ -145,10 +148,10 @@ module.exports = {
             let currentUser = req.user;
             let acceptUserId = req.params.acceptUserId;
             let acceptUser = await User.findOne({ _id: acceptUserId });
-            if(!acceptUser) throw new Error("User not found")
+            if (!acceptUser) res.status(404).json({ message: "USER NOT FOUND" })
             let acceptRequest = currentUser.receivedRequests.find((u) => { u._id == acceptUserId; return u });
-            if(acceptRequest.isAccepted === true) throw new Error("Friends Already")
-            else{
+            if (acceptRequest.isAccepted === true) return res.status(208).json("ALREADY YOU HAVE SENT FRIEND REQUEST")
+            else {
                 acceptRequest.isAccepted = true;
                 let sentRequest = acceptUser.sentRequests.find((u) => { u._id == currentUser._id; return u })
                 sentRequest.isAccepted = true;
@@ -166,13 +169,23 @@ module.exports = {
         try {
             let currentUser = req.user;
             let users = await User.find({});
-            for(let i = 0;i<users.length;i++){
+            for (let i = 0; i < users.length; i++) {
                 let currentUserIndex = users[i].friends.indexOf(currentUser._id)
-                if(currentUserIndex !== -1){
-                    users[i].friends.splice(currentUserIndex,1)
+                let sentReqIndex = users[i].sentRequests.findIndex((u) => u._id == currentUser._id)
+                let recReqIndex = users[i].receivedRequests.findIndex((u) => u._id == currentUser._id)
+                if (currentUserIndex !== -1) {
+                    users[i].friends.splice(currentUserIndex, 1)
+                    await users[i].save()
+                }
+                if (sentReqIndex !== -1) {
+                    users[i].sentRequests.splice(currentUserIndex, 1)
+                    await users[i].save()
+                }
+                if (recReqIndex !== -1) {
+                    users[i].receivedRequests.splice(currentUserIndex, 1)
+                    await users[i].save()
                 }
             }
-            await users.save()
             await User.findByIdAndDelete({ _id: currentUser._id });
             await Post.deleteMany({ user: currentUser._id }).populate("comment");
             return res.status(200).json("SUCCESS");
@@ -180,7 +193,7 @@ module.exports = {
             return res.status(500).json(error.message);
         }
     },
-    getAllUsers: async (req,res) => {
+    getAllUsers: async (req, res) => {
         try {
             let users = await User.find({})
             return res.status(200).json(users)

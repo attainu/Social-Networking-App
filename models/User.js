@@ -12,7 +12,6 @@ let userSchema = new Schema(
             type: String,
             required: true,
             trim: true,
-            unique: true,
         },
         password: {
             type: String,
@@ -30,7 +29,7 @@ let userSchema = new Schema(
         },
         profilePicture: {
             type: String,
-            default: null
+            default: "https://clipartart.com/images/default-profile-picture-clipart-3.jpg"
         },
         isConfirm: {
             type: Boolean,
@@ -56,7 +55,6 @@ let userSchema = new Schema(
                 user: {
                     type: Schema.Types.ObjectId,
                     ref: "user",
-                    unique: true
 
                 },
                 isAccepted: {
@@ -71,7 +69,6 @@ let userSchema = new Schema(
                 user: {
                     type: Schema.Types.ObjectId,
                     ref: "user",
-                    unique: true
                 },
                 isAccepted: {
                     type: Boolean,
@@ -83,7 +80,7 @@ let userSchema = new Schema(
             {
                 type: Schema.Types.ObjectId,
                 ref: "user",
-                unique: true
+                
             }
         ]
     },
@@ -101,3 +98,4 @@ userSchema.methods.toJSON = function () {
 let User = mongoose.model("user", userSchema);
 
 module.exports = User;
+

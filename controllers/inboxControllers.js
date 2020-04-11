@@ -26,14 +26,14 @@ module.exports = {
                 let friendInbox = new Inbox({...messageInfoFriend});
                 friendInbox.conversation.push(formatedMessage);
                 await friendInbox.save();
-                return res.json(userConversation);
+                return res.json(formatedMessage);
             }
             else {
                 userConversation.conversation.push(formatedMessage);
                 friendConversation.conversation.push(formatedMessage);
                 await friendConversation.save()
                 await userConversation.save()
-                return res.json(userConversation)
+                return res.json(formatedMessage)
             }
         } 
         catch (error) {
@@ -44,7 +44,6 @@ module.exports = {
     getInbox: async (req,res) => {
         try {
             let currentUser = req.user;
-            console.log(currentUser._id)
             let convo = await Inbox.find({user:currentUser._id}).populate("friend",["name","profilePicture"])
             return res.json(convo)
         } catch (error) {

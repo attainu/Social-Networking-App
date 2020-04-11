@@ -7,7 +7,7 @@ let { createComment , deleteComment, updateComment } = require("../controllers/c
 
 router.post("/createComment/:postId",authenticate,createComment);
 router.put("/updateComment/:commentId",authenticate,accountOwner,updateComment);
-router.delete("/deleteComment/:commentId",authenticate,accountOwner,deleteComment);
+router.post("/deleteComment/:commentId",authenticate,accountOwner,deleteComment);
 
 
 

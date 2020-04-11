@@ -18,7 +18,7 @@ module.exports = {
             let post = await Post.findOne({_id:postId})
             post.comments.push(comment._id);
             await post.save()
-            return res.json({name:req.user.name ,comment:userComment})
+            return res.json({name:req.user.name ,comment:comment})
         }
         catch(error){
             return res.status(500).json(error.message)
@@ -30,7 +30,7 @@ module.exports = {
             let newComment = req.body.comment;
             comment.comment = newComment;
             await comment.save();
-            return res.status(200).json("UPDATED SUCCESSFULLY")
+            return res.status(200).json(comment)
         }
         catch(error){
             return res.status(500).json(error.message)
@@ -40,6 +40,7 @@ module.exports = {
         try {
             let comment = req.comment;
             await Comment.deleteOne({_id:comment._id})
+            return res.status(200).json("Success")
         }
         catch(error){
             return res.status(500).json(error.message)

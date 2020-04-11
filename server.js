@@ -7,6 +7,8 @@ let postRoutes = require("./routes/postRoutes");
 let commentRoutes = require("./routes/commentRoutes");
 let inboxRoutes = require("./routes/inboxRoutes");
 let app = express();
+let http = require('http').createServer(app);
+let io = require('socket.io')(http);
 require("./db");
 
 //To remove CORS 
@@ -17,6 +19,7 @@ app.use(function(req, res, next) {
     next();
 });
 
+let PORT = process.env.PORT || 8089
 
 //Body Parser
 app.use(express.json())
@@ -28,5 +31,14 @@ app.use(postRoutes);
 app.use(commentRoutes);
 app.use(inboxRoutes);
 
+io.on('connection', (socket) => {
+    socket.on("userJoin", (data) => {
+    })
+    socket.on("message", (data) => {
+        socket.broadcast.emit("sendMessage" ,data)
+    })
+})
+
+
 //Listing to the server
-app.listen(8089, () => console.log("Server connected"));
+http.listen(PORT, () => console.log("Server connected"));

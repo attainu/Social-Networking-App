@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <title>Hello, world!</title>
+</head>
+
+<body >
+
+    <div id="signUpPage">
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand">Amigos</a>
+            <form class="form-inline loginForm">
+                <input required class="form-control mr-sm-2" id="loginEmail" type="text" name="email"
+                    placeholder="Enter your email">
+                <input required class="form-control mr-sm-2" id="loginPassword" type="password" name="password"
+                    placeholder="Enter your password">
+                <button type="submit" class="btn btn-secondary">Login</button>
+            </form>
+        </nav>
+        <h2 class="mt-5" style="text-align: center">Join Amigos !!!</h2>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <form class="myForm">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input required id="registerName" type="text" name="name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Email address</label>
+                        <input required id="registerEmail" type="email" name="email" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input required id="registerPassword" type="password" name="password" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input required id="registerCity" type="text" name="city" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>DOB</label>
+                        <input required id="registerDob" type="text" name="dob" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-dark registerSubmit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="homePage">
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand">Amigos</a>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-secondary myProfile">My Profile</button>
+                <button type="button" class="btn btn-secondary inbox">Inbox</button>
+                <button type="button" class="btn btn-secondary friends">Friends</button>
+                <button type="button" class="btn btn-secondary explorePeople">Explore People</button>
+                <button type="button" class="btn btn-secondary logout">Logout</button>
+            </div>
+        </nav>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <div class="input-group ">
+                    <textarea class="form-control status" placeholder="Write you status here"></textarea>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input fileName" id="inputGroupFile04"
+                                aria-describedby="inputGroupFileAddon04">
+                            <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-secondary createPost" type="button">Create Post</button>
+                </div>
+            </div>
+        </div>
+        <div class="container ">
+            <div class="row justify-content-center mt-5">
+                <div class="col-md-8.5 postBox">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="inboxPage">
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand">Amigos</a>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-secondary home">Home</button>
+                <button type="button" class="btn btn-secondary myProfile">My Profile</button>
+                <button type="button" class="btn btn-secondary friends">Friends</button>
+                <button type="button" class="btn btn-secondary explorePeople">Explore People</button>
+                <button type="button" class="btn btn-secondary logout">Logout</button>
+            </div>
+        </nav>
+        <div class="container inboxBox">
+        </div>
+    </div>
+
+    <div id="profilePage">
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand">Amigos</a>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-secondary home">Home</button>
+                <button type="button" class="btn btn-secondary inbox">Inbox</button>
+                <button type="button" class="btn btn-secondary friends">Friends</button>
+                <button type="button" class="btn btn-secondary explorePeople">Explore People</button>
+                <button type="button" class="btn btn-secondary logout">Logout</button>
+            </div>
+        </nav>
+        <div class="btn-group mt-2" role="group" aria-label="Basic example" style="float: right;margin-right: 2rem;">
+            <button type="button" onclick="deactivate(event)" class="btn btn-secondary" value="${comment._id}">Delete Account</button>
+        </div>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6 profileBox">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="friends">
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand">Amigos</a>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-secondary home">Home</button>
+                <button type="button" class="btn btn-secondary myProfile">My Profile</button>
+                <button type="button" class="btn btn-secondary inbox">Inbox</button>
+                <button type="button" class="btn btn-secondary explorePeople">Explore People</button>
+                <button type="button" class="btn btn-secondary logout">Logout</button>
+            </div>
+        </nav>
+        <div class="row row-cols-1 row-cols-md-3 friendsBox">
+        </div>
+    </div>
+
+    <div id="explorePeople">
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand">Amigos</a>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-secondary home">Home</button>
+                <button type="button" class="btn btn-secondary myProfile">My Profile</button>
+                <button type="button" class="btn btn-secondary inbox">Inbox</button>
+                <button type="button" class="btn btn-secondary friends">Friends</button>
+                <button type="button" class="btn btn-secondary logout">Logout</button>
+            </div>
+        </nav>
+        <div class="row row-cols-1 row-cols-md-2 mt-5 userBox">
+
+        </div>
+    </div>
+
+
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
